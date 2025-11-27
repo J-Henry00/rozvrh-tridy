@@ -1,0 +1,22 @@
+<?php
+include 'data.php';
+
+// Nastavení
+$user_to_fix = "admin";
+$new_password = "admin123";
+
+// 1. Vytvoření hashe
+$hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+// 2. Update v databázi
+$sql = "UPDATE users SET password = '$hashed_password' WHERE username = '$user_to_fix'";
+
+if ($conn->query($sql) === TRUE) {
+    echo "<h1>HOTOVO!</h1>";
+    echo "Heslo pro uživatele <strong>$user_to_fix</strong> bylo změněno na hash.<br>";
+    echo "Nyní se můžeš přihlásit s heslem: <strong>$new_password</strong><br><br>";
+    echo "<a href='zmeny.php'>Přejít na přihlášení</a>";
+} else {
+    echo "Chyba: " . $conn->error;
+}
+?>

@@ -1,0 +1,134 @@
+-- ========================================================
+-- KOMPLETNÍ SETUP DATABÁZE PRO ŠKOLNÍ TABULI
+-- ========================================================
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+01:00";
+
+-- 1. VYTVOŘENÍ A VÝBĚR DATABÁZE (Smaže starou, pokud existuje!)
+DROP DATABASE IF EXISTS `rozvrh`;
+CREATE DATABASE `rozvrh` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_czech_ci;
+USE `rozvrh`;
+
+-- --------------------------------------------------------
+
+-- 2. TABULKA UŽIVATELÉ
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) COLLATE utf8mb4_czech_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_czech_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
+
+-- Vložení uživatelů
+INSERT INTO `users` (`username`, `password`) VALUES
+('admin', 'admin123'),
+('hjindra', 'heslo');
+
+-- --------------------------------------------------------
+
+-- 3. TABULKA UČITELÉ (Zkratky)
+CREATE TABLE `ucitele` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `jmeno` varchar(100) COLLATE utf8mb4_czech_ci NOT NULL,
+  `zkratka` varchar(10) COLLATE utf8mb4_czech_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `jmeno` (`jmeno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
+
+-- Vložení zkratek (Dle tvého zadání)
+INSERT INTO `ucitele` (`jmeno`, `zkratka`) VALUES
+('Bc. Aleš Rak', 'Ra'),
+('Lukáš Bařinka', 'Bř');
+
+-- --------------------------------------------------------
+
+-- 4. TABULKA ZVONĚNÍ
+CREATE TABLE `zvoneni` (
+  `hodina` int(11) NOT NULL,
+  `cas_od` time NOT NULL,
+  `cas_do` time NOT NULL,
+  PRIMARY KEY (`hodina`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
+
+-- Vložení časů
+INSERT INTO `zvoneni` (`hodina`, `cas_od`, `cas_do`) VALUES
+(1, '07:30:00', '08:15:00'),
+(2, '08:25:00', '09:10:00'),
+(3, '09:15:00', '10:00:00'),
+(4, '10:20:00', '11:05:00'),
+(5, '11:10:00', '11:55:00'),
+(6, '12:05:00', '12:50:00'),
+(7, '12:55:00', '13:40:00'),
+(8, '13:45:00', '14:30:00');
+
+-- --------------------------------------------------------
+
+-- 5. TABULKA ROZVRH
+CREATE TABLE `rozvrh` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `den` int(11) NOT NULL, -- 1=Po, 2=Út...
+  `hodina` int(11) NOT NULL,
+  `predmet` varchar(100) COLLATE utf8mb4_czech_ci NOT NULL,
+  `ucitel` varchar(100) COLLATE utf8mb4_czech_ci NOT NULL,
+  `trida` varchar(50) COLLATE utf8mb4_czech_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `den_hodina` (`den`, `hodina`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
+
+-- Vložení rozvrhu (Rozepsáno po hodinách)
+
+-- PONDĚLÍ
+-- 1-3. hodina: 1A: Bc. Aleš Rak: Práce s materiálem
+INSERT INTO `rozvrh` (`den`, `hodina`, `trida`, `ucitel`, `predmet`) VALUES
+(1, 1, '1A', 'Bc. Aleš Rak', 'Práce s materiálem'),
+(1, 2, '1A', 'Bc. Aleš Rak', 'Práce s materiálem'),
+(1, 3, '1A', 'Bc. Aleš Rak', 'Práce s materiálem');
+
+-- 5-7. hodina: 1B: Lukáš Bařinka: Práce s materiálem
+INSERT INTO `rozvrh` (`den`, `hodina`, `trida`, `ucitel`, `predmet`) VALUES
+(1, 5, '1B', 'Lukáš Bařinka', 'Práce s materiálem'),
+(1, 6, '1B', 'Lukáš Bařinka', 'Práce s materiálem'),
+(1, 7, '1B', 'Lukáš Bařinka', 'Práce s materiálem');
+
+-- ÚTERÝ
+-- 5-7. hodina: 2B: Lukáš Bařinka: Strojní obrábění
+INSERT INTO `rozvrh` (`den`, `hodina`, `trida`, `ucitel`, `predmet`) VALUES
+(2, 5, '2B', 'Lukáš Bařinka', 'Strojní obrábění'),
+(2, 6, '2B', 'Lukáš Bařinka', 'Strojní obrábění'),
+(2, 7, '2B', 'Lukáš Bařinka', 'Strojní obrábění');
+
+-- ČTVRTEK
+-- 6-7. hodina: 2D: Lukáš Bařinka: Práce s materiálem
+INSERT INTO `rozvrh` (`den`, `hodina`, `trida`, `ucitel`, `predmet`) VALUES
+(4, 6, '2D', 'Lukáš Bařinka', 'Práce s materiálem'),
+(4, 7, '2D', 'Lukáš Bařinka', 'Práce s materiálem');
+
+-- PÁTEK
+-- 1-2. hodina: 3D: Lukáš Bařinka: Strojní obrábění
+INSERT INTO `rozvrh` (`den`, `hodina`, `trida`, `ucitel`, `predmet`) VALUES
+(5, 1, '3D', 'Lukáš Bařinka', 'Strojní obrábění'),
+(5, 2, '3D', 'Lukáš Bařinka', 'Strojní obrábění');
+
+-- 3-5. hodina: V1: Lukáš Bařinka: Práce s materiálem
+INSERT INTO `rozvrh` (`den`, `hodina`, `trida`, `ucitel`, `predmet`) VALUES
+(5, 3, 'V1', 'Lukáš Bařinka', 'Práce s materiálem'),
+(5, 4, 'V1', 'Lukáš Bařinka', 'Práce s materiálem'),
+(5, 5, 'V1', 'Lukáš Bařinka', 'Práce s materiálem');
+
+-- --------------------------------------------------------
+
+-- 6. TABULKA ZMĚNY (Prázdná, připravená)
+CREATE TABLE `zmeny` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `den` int(11) NOT NULL,
+  `hodina` int(11) NOT NULL,
+  `typ` enum('cancel','change','move') COLLATE utf8mb4_czech_ci NOT NULL,
+  `novy_predmet` varchar(100) COLLATE utf8mb4_czech_ci DEFAULT NULL,
+  `novy_ucitel` varchar(100) COLLATE utf8mb4_czech_ci DEFAULT NULL,
+  `novy_trida` varchar(50) COLLATE utf8mb4_czech_ci DEFAULT NULL,
+  `poznamka` varchar(255) COLLATE utf8mb4_czech_ci DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;

@@ -1,0 +1,167 @@
+/* style.css - FINÁLNÍ VERZE (BEZ SPLIT VIEW) */
+
+:root {
+    --font-main: 'Patrick Hand', cursive;
+    --accent-blue: #0065BD; 
+    --alert-red: #e74c3c; 
+    
+    /* LIGHT MODE */
+    --bg-color: #f4f4f9;
+    --text-color: #333;
+    --border-color: #ccc;
+    --card-bg: #fff;
+    --item-bg: #fff;
+    --active-row-bg: rgba(0, 101, 189, 0.1);
+    --header-bg: #e0e0e0;
+}
+
+/* DARK MODE */
+body.dark-mode {
+    --bg-color: #111;
+    --text-color: #eee;
+    --border-color: #444;
+    --card-bg: #1a1a1a;
+    --item-bg: #222;
+    --active-row-bg: rgba(0, 101, 189, 0.2);
+    --header-bg: #222;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    margin: 0; padding: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- HEADER --- */
+header { margin-top: 20px; margin-bottom: 20px; flex-shrink: 0; width: 90%; max-width: 1000px; display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
+.logo-img { height: 80px; width: auto; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.header-text { text-align: center; }
+.clock-big { font-size: 4rem; line-height: 1; font-weight: bold; color: var(--accent-blue); }
+.date-small { font-size: 1.5rem; opacity: 0.8; }
+.manual-indicator { color: #ff5555; font-size: 1rem; margin-top: 5px; border: 1px solid #ff5555; display: inline-block; padding: 0 10px; border-radius: 5px; background: rgba(255, 85, 85, 0.1); }
+
+/* --- SLIDES LAYOUT --- */
+.slide-container { width: 90%; max-width: 1000px; height: 65vh; position: relative; }
+.slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.8s ease-in-out; display: flex; justify-content: center; align-items: center; flex-direction: column; pointer-events: none; }
+.slide.active { opacity: 1; pointer-events: all; }
+
+/* --- GRID TABLE (Tabule) --- */
+.grid-table { width: 100%; border-collapse: collapse; border: 2px solid var(--accent-blue); box-shadow: 0 0 15px rgba(0,0,0,0.05); background: var(--card-bg); }
+.grid-table th, .grid-table td { border: 1px solid var(--border-color); padding: 5px; text-align: center; font-size: 1.1rem; }
+.grid-table th { background-color: var(--active-row-bg); font-size: 1.3rem; vertical-align: middle; color: var(--accent-blue); }
+.grid-cell-day { font-weight: bold; font-size: 1.3rem; width: 50px; color: var(--accent-blue); }
+.active-day-row { background-color: var(--active-row-bg); }
+.header-time { display: block; font-size: 0.7em; font-weight: normal; opacity: 0.8; margin-top: 2px; color: var(--text-color); }
+
+/* --- CONTENT STYLES --- */
+.grid-subject { font-weight: bold; display: block; line-height: 1.1; margin-bottom: 3px; }
+.grid-details { display: block; font-size: 0.85rem; color: var(--text-color); opacity: 0.7; margin-top: 2px; line-height: 1.2; }
+.cancelled { background-color: rgba(231, 76, 60, 0.1); text-decoration: line-through; opacity: 0.7; }
+.cancelled .grid-details { color: var(--alert-red); opacity: 0.7; text-decoration: line-through; }
+.changed { background-color: rgba(0, 101, 189, 0.1); font-weight: bold; }
+.sub-info { display: block; font-size: 0.8em; color: var(--alert-red); text-decoration: none; }
+
+/* --- LIST VIEW --- */
+.daily-list { width: 100%; height: 100%; overflow-y: auto; }
+.list-item { background: var(--item-bg); border: 1px solid var(--border-color); margin-bottom: 10px; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid transparent; }
+.list-item.past { opacity: 0.5; } 
+.list-item.current { border-left: 5px solid var(--accent-blue); background: var(--active-row-bg); }
+.list-item.cancelled-item { border-left: 5px solid var(--alert-red); opacity: 0.8; }
+.list-time { font-size: 1.2rem; opacity: 0.7; text-align: right; min-width: 80px; margin-right: 15px; }
+.list-info { flex-grow: 1; text-align: left; }
+.subject-name { font-size: 1.8rem; font-weight: bold; color: var(--text-color); }
+.room-info { font-size: 1.2rem; color: var(--accent-blue); }
+
+/* --- DASHBOARD --- */
+.current-status-box { border: 3px solid var(--accent-blue); border-radius: 20px; padding: 30px; width: 80%; text-align: center; margin-bottom: 40px; background: var(--card-bg); box-shadow: 0 0 20px rgba(0, 101, 189, 0.1); }
+.status-label { font-size: 1.5rem; margin-bottom: 10px; opacity: 0.7; }
+.current-subject { font-size: 3rem; font-weight: bold; margin: 10px 0; color: var(--accent-blue); }
+.teacher-name { font-size: 2rem; opacity: 0.8; }
+.next-status-box { border: 1px solid var(--border-color); border-radius: 15px; padding: 15px; width: 50%; text-align: center; background: var(--card-bg); }
+
+/* --- COLORS --- */
+.text-red-strike { color: var(--alert-red) !important; text-decoration: line-through !important; }
+.text-yellow { color: #f39c12 !important; }
+body:not(.dark-mode) .text-yellow { color: #d35400 !important; }
+
+/* --- CONTROL PANEL --- */
+.control-panel { position: absolute; bottom: 30px; display: flex; gap: 15px; z-index: 100; flex-wrap: wrap; justify-content: center; }
+.switch-btn { background: var(--card-bg); border: 2px solid var(--accent-blue); color: var(--accent-blue); font-family: var(--font-main); font-size: 1.1rem; padding: 8px 20px; border-radius: 50px; cursor: pointer; transition: 0.3s; }
+.switch-btn:hover { background: var(--accent-blue); color: #fff; }
+.switch-btn.beta { border-color: #ff5555; color: #ff5555; }
+.switch-btn.beta:hover { background: #ff5555; color: white; }
+.switch-btn.admin { border-color: #f39c12; color: #f39c12; }
+.switch-btn.admin:hover { background: #f39c12; color: #fff; }
+
+/* ========================================= */
+/* --- ADMIN PANEL & LOGIN --- */
+/* ========================================= */
+
+.login-box, .admin-container {
+    width: 95%; max-width: 1400px;
+    background: var(--card-bg); padding: 30px;
+    border: 2px solid var(--border-color); border-radius: 15px;
+    text-align: center; margin: 30px auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+.login-box { max-width: 400px; }
+
+.admin-cols { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; justify-content: center; }
+.admin-col { flex: 1; min-width: 300px; padding: 20px; border: 1px solid var(--border-color); border-radius: 10px; background: rgba(0,0,0,0.02); }
+
+.admin-container input, .admin-container select, .login-box input {
+    padding: 10px; margin: 5px 0 15px 0; width: 100%;
+    font-family: var(--font-main); font-size: 1.1rem;
+    border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); box-sizing: border-box; border-radius: 5px;
+}
+
+.admin-container button, .login-box button {
+    background: var(--accent-blue); color: #fff; border: none;
+    padding: 12px; font-size: 1.1rem; cursor: pointer; border-radius: 5px; width: 100%; font-family: var(--font-main);
+    transition: opacity 0.2s;
+}
+.admin-container button:hover, .login-box button:hover { opacity: 0.8; }
+
+.admin-container a { color: var(--accent-blue); text-decoration: none; }
+.admin-container a:hover { text-decoration: underline; }
+
+/* Tabulka aktivních změn */
+.admin-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-bottom: 20px; }
+.admin-table th, .admin-table td { border: 1px solid var(--border-color); padding: 8px; text-align: left; }
+.btn-delete { 
+    background-color: var(--alert-red) !important; color: white !important; 
+    border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; 
+    text-decoration: none !important; display: inline-block; font-size: 0.9rem;
+}
+
+/* --- ADMIN SCROLLOVACÍ ROZVRH --- */
+.admin-preview-wrapper {
+    width: 100%;
+    overflow-x: auto; 
+    border: 2px solid var(--border-color); border-radius: 10px;
+    background: var(--card-bg); padding: 10px; box-sizing: border-box;
+    margin-top: 20px;
+}
+
+.admin-preview-wrapper .grid-table {
+    min-width: 1200px; /* Zajistí, že se tabulka nedeformuje */
+    width: 100%;
+    border: none; box-shadow: none; margin: 0;
+}
+
+.admin-preview-wrapper td, .admin-preview-wrapper th {
+    white-space: nowrap; 
+    padding: 8px 12px; height: 50px;
+    border: 1px solid var(--border-color);
+}
+
+/* DRAG & DROP */
+.draggable-cell { cursor: grab; transition: 0.2s; }
+.draggable-cell:active { cursor: grabbing; opacity: 0.5; }
+.drop-zone { height: 100%; min-height: 40px; }
+.drag-over { background-color: rgba(0, 101, 189, 0.2) !important; border: 2px dashed var(--accent-blue) !important; }
