@@ -1,6 +1,8 @@
 <?php
 // data.php - Připojení k MySQL databázi
 
+ini_set('date.timezone', 'Europe/Prague');
+
 $servername = "localhost";
 $username = "rozvrhac";
 $password = "heslo";
