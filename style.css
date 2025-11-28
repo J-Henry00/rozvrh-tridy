@@ -1,9 +1,9 @@
-/* style.css - FINÁLNÍ VERZE (BEZ SPLIT VIEW) */
-
+/* style.css */
 :root {
     --font-main: 'Patrick Hand', cursive;
     --accent-blue: #0065BD; 
     --alert-red: #e74c3c; 
+    --perm-green: #27ae60; /* Barva pro trvalé změny */
     
     /* LIGHT MODE */
     --bg-color: #f4f4f9;
@@ -50,7 +50,7 @@ header { margin-top: 20px; margin-bottom: 20px; flex-shrink: 0; width: 90%; max-
 .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.8s ease-in-out; display: flex; justify-content: center; align-items: center; flex-direction: column; pointer-events: none; }
 .slide.active { opacity: 1; pointer-events: all; }
 
-/* --- GRID TABLE (Tabule) --- */
+/* --- GRID TABLE --- */
 .grid-table { width: 100%; border-collapse: collapse; border: 2px solid var(--accent-blue); box-shadow: 0 0 15px rgba(0,0,0,0.05); background: var(--card-bg); }
 .grid-table th, .grid-table td { border: 1px solid var(--border-color); padding: 5px; text-align: center; font-size: 1.1rem; }
 .grid-table th { background-color: var(--active-row-bg); font-size: 1.3rem; vertical-align: middle; color: var(--accent-blue); }
@@ -58,7 +58,7 @@ header { margin-top: 20px; margin-bottom: 20px; flex-shrink: 0; width: 90%; max-
 .active-day-row { background-color: var(--active-row-bg); }
 .header-time { display: block; font-size: 0.7em; font-weight: normal; opacity: 0.8; margin-top: 2px; color: var(--text-color); }
 
-/* --- CONTENT STYLES --- */
+/* --- CONTENT --- */
 .grid-subject { font-weight: bold; display: block; line-height: 1.1; margin-bottom: 3px; }
 .grid-details { display: block; font-size: 0.85rem; color: var(--text-color); opacity: 0.7; margin-top: 2px; line-height: 1.2; }
 .cancelled { background-color: rgba(231, 76, 60, 0.1); text-decoration: line-through; opacity: 0.7; }
@@ -99,7 +99,7 @@ body:not(.dark-mode) .text-yellow { color: #d35400 !important; }
 .switch-btn.admin:hover { background: #f39c12; color: #fff; }
 
 /* ========================================= */
-/* --- ADMIN PANEL & LOGIN --- */
+/* --- ADMIN PANEL STYLES --- */
 /* ========================================= */
 
 .login-box, .admin-container {
@@ -149,19 +149,97 @@ body:not(.dark-mode) .text-yellow { color: #d35400 !important; }
 }
 
 .admin-preview-wrapper .grid-table {
-    min-width: 1200px; /* Zajistí, že se tabulka nedeformuje */
+    min-width: 1200px; 
     width: 100%;
     border: none; box-shadow: none; margin: 0;
 }
 
 .admin-preview-wrapper td, .admin-preview-wrapper th {
     white-space: nowrap; 
-    padding: 8px 12px; height: 50px;
+    padding: 0; /* Padding dáme dovnitř, aby fungoval drag po celé ploše */
+    height: 50px;
     border: 1px solid var(--border-color);
+    position: relative; /* DŮLEŽITÉ: Aby tužka byla fixnutá v rohu buňky */
+    vertical-align: top;
 }
 
-/* DRAG & DROP */
-.draggable-cell { cursor: grab; transition: 0.2s; }
-.draggable-cell:active { cursor: grabbing; opacity: 0.5; }
-.drop-zone { height: 100%; min-height: 40px; }
-.drag-over { background-color: rgba(0, 101, 189, 0.2) !important; border: 2px dashed var(--accent-blue) !important; }
+/* --- DRAG & DROP & EDIT STYLY --- */
+
+/* Obal obsahu buňky - za toto se tahá */
+.draggable-content {
+    padding: 8px 25px 8px 12px; /* Vpravo místo pro tužku */
+    width: 100%;
+    height: 100%;
+    min-height: 50px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.draggable-cell { 
+    cursor: grab; 
+    transition: 0.2s; 
+}
+.draggable-cell:active { 
+    cursor: grabbing; 
+    opacity: 0.6;
+    background-color: rgba(0,0,0,0.05);
+}
+
+.drop-zone { 
+    height: 100%; 
+}
+
+.drag-over { 
+    background-color: rgba(0, 101, 189, 0.2) !important; 
+    border: 2px dashed var(--accent-blue) !important; 
+}
+
+/* Tlačítko editace (tužka) */
+.cell-edit-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255,255,255,0.8); /* Jemné pozadí, aby byla vidět */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    z-index: 10; /* Musí být nad textem */
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Zvýraznění tužky při najetí na BUŇKU */
+.drop-zone:hover .cell-edit-btn { 
+    opacity: 1; 
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Modální okno */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 999;
+    display: none; justify-content: center; align-items: center;
+}
+.modal-content {
+    background: var(--card-bg);
+    width: 90%; max-width: 500px;
+    padding: 30px; border-radius: 15px;
+    border: 2px solid var(--perm-green);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    text-align: left;
+    position: relative;
+}
+.modal-close { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; }
+.btn-perm-save { background-color: var(--perm-green) !important; color: white !important; margin-bottom: 10px; }
+.btn-perm-del { background-color: var(--alert-red) !important; color: white !important; }
