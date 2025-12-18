@@ -23,7 +23,7 @@ CREATE TABLE `users` (
 
 -- Vložení uživatelů
 INSERT INTO `users` (`username`, `password`) VALUES
-('admin', 'admin123');
+('admin', 'admin');
 
 -- --------------------------------------------------------
 

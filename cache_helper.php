@@ -2,61 +2,62 @@
 // cache_helper.php
 
 /**
- * Získá data z cache nebo je načte pomocí callback funkce a uloží.
+ * Získá data z cache (cookies) nebo je načte pomocí callback funkce a uloží do cookies.
  *
- * @param string   $key       Unikátní klíč pro cache (bude název souboru).
- * @param int      $duration  Doba platnosti v sekundách (např. 1800 pro 30 min).
- * @param callable $callback  Funkce, která vrátí data, pokud cache neexistuje nebo je stará.
- * @return mixed              Data (z cache nebo z DB).
+ * @param string   $key       Unikátní klíč pro cache.
+ * @param int      $duration  Doba platnosti v sekundách.
+ * @param callable $callback  Funkce, která vrátí data, pokud cache neexistuje.
+ * @return mixed              Data.
  */
 function get_cached_data($key, $duration, $callback) {
-    // Adresář, kam se ukládají cache soubory
-    $cache_dir = __DIR__ . '/cache';
-    if (!is_dir($cache_dir)) {
-        if (!mkdir($cache_dir, 0777, true)) {
-            // Pokud nejde vytvořit složku, vrátíme rovnou data z DB (fallback)
-            return $callback();
+    $cookie_name = 'cache_' . $key;
+
+    // 1. Zkusíme načíst z cookies
+    if (isset($_COOKIE[$cookie_name])) {
+        // Data jsou v cookies zakódována Base64 (aby přežila transport)
+        $json = base64_decode($_COOKIE[$cookie_name]);
+        $data = json_decode($json, true);
+        
+        if ($data !== null) {
+            return $data;
         }
     }
 
-    $cache_file = $cache_dir . '/' . $key . '.json';
-    $current_time = time();
-
-    // 1. Zkusíme načíst z cache
-    if (file_exists($cache_file)) {
-        $file_mtime = filemtime($cache_file);
-        // Pokud je soubor mladší než $duration, použijeme ho
-        if (($current_time - $file_mtime) < $duration) {
-            $json_content = file_get_contents($cache_file);
-            $data = json_decode($json_content, true);
-            if ($data !== null) {
-                return $data;
-            }
-        }
-    }
-
-    // 2. Pokud cache není nebo je stará, načteme data callbackem
+    // 2. Pokud cache není, načteme data callbackem (DB)
     $data = $callback();
 
-    // 3. Uložíme nová data do cache
-    file_put_contents($cache_file, json_encode($data));
+    // 3. Uložíme do cookies
+    $json = json_encode($data);
+    $base64_data = base64_encode($json); // Base64 zvětší velikost o 33%
+
+    // Ochrana proti přetečení limitu cookies (cca 4096 bytů)
+    // Necháváme rezervu, takže limit cca 3800 pro bezpečí
+    if (strlen($base64_data) < 3800) {
+        // Nastavíme cookie
+        // setcookie(name, value, expires, path, domain, secure, httponly)
+        if (!headers_sent()) {
+            setcookie($cookie_name, $base64_data, time() + $duration, "/", "", false, true);
+        }
+    } else {
+        // Data jsou příliš velká pro cookie -> nelze cachovat u klienta tímto způsobem.
+        // Vracíme data, ale neukládáme.
+    }
 
     return $data;
 }
 
 /**
- * Smaže celou cache (všechny .json soubory ve složce cache).
- * Volat po jakékoliv změně v DB (zmeny.php).
+ * Smaže celou cache (všechny cookies začínající na cache_).
  */
 function clear_all_cache() {
-    $cache_dir = __DIR__ . '/cache';
-    if (is_dir($cache_dir)) {
-        $files = glob($cache_dir . '/*.json');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
+    if (isset($_COOKIE)) {
+        foreach ($_COOKIE as $key => $val) {
+            if (strpos($key, 'cache_') === 0) {
+                // Smazání nastavením expirace do minulosti
+                setcookie($key, "", time() - 3600, "/");
+                // Odstranění z globálního pole pro tento běh skriptu
+                unset($_COOKIE[$key]);
             }
         }
     }
 }
-?>
